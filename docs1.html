@@ -1,411 +1,122 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI Movie Recommendation Engine — Full Documentation</title>
+  <title>AI Movie Recommendation Engine — Full Code Documentation</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap');
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--purple:#7c3aed;--pink:#db2777;--blue:#2563eb;--green:#059669;--yellow:#d97706;--bg:#0f0923;--card:rgba(255,255,255,0.05);--border:rgba(255,255,255,0.1);--text:#e2e8f0;--muted:rgba(203,213,225,0.65)}
+    html{scroll-behavior:smooth}
+    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+    body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 10% 10%,rgba(124,58,237,0.22) 0%,transparent 45%),radial-gradient(ellipse at 90% 85%,rgba(37,99,235,0.18) 0%,transparent 45%),radial-gradient(ellipse at 55% 50%,rgba(219,39,119,0.09) 0%,transparent 50%);pointer-events:none;z-index:0;animation:bgPulse 8s ease-in-out infinite alternate}
+    @keyframes bgPulse{from{opacity:.7}to{opacity:1}}
+    .particles{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+    .particle{position:absolute;width:3px;height:3px;border-radius:50%;background:rgba(168,85,247,.5);animation:floatUp linear infinite}
+    @keyframes floatUp{0%{transform:translateY(110vh) scale(0);opacity:0}10%{opacity:1}90%{opacity:.6}100%{transform:translateY(-10vh) scale(1.5);opacity:0}}
+    nav{position:sticky;top:0;z-index:100;background:rgba(15,9,35,.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+    .nav-brand{font-size:1rem;font-weight:800;background:linear-gradient(135deg,#c084fc,#60a5fa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .nav-links{display:flex;gap:18px;flex-wrap:wrap}
+    .nav-links a{color:var(--muted);text-decoration:none;font-size:.85rem;font-weight:500;transition:color .2s}
+    .nav-links a:hover{color:#c4b5fd}
+    .wrap{max-width:980px;margin:0 auto;padding:0 24px 100px;position:relative;z-index:1}
+    .hero{text-align:center;padding:80px 0 50px;animation:fadeDown .8s ease both}
+    @keyframes fadeDown{from{opacity:0;transform:translateY(-30px)}to{opacity:1;transform:translateY(0)}}
+    .hero-badge{display:inline-block;background:linear-gradient(135deg,rgba(124,58,237,.3),rgba(219,39,119,.3));border:1px solid rgba(168,85,247,.45);color:#c4b5fd;font-size:.75rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:6px 18px;border-radius:999px;margin-bottom:22px}
+    .hero h1{font-size:clamp(2rem,5vw,3.2rem);font-weight:800;line-height:1.15;margin-bottom:16px;background:linear-gradient(135deg,#f8fafc 0%,#c084fc 40%,#60a5fa 70%,#f472b6 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 28px rgba(192,132,252,.35))}
+    .hero p{font-size:1.05rem;color:var(--muted);max-width:620px;margin:0 auto 28px;line-height:1.8}
+    .hero-links{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:11px 22px;border-radius:10px;font-size:.9rem;font-weight:600;text-decoration:none;transition:transform .2s,box-shadow .2s;cursor:pointer}
+    .btn-primary{background:linear-gradient(135deg,var(--purple),var(--pink));color:#fff;box-shadow:0 4px 20px rgba(124,58,237,.4)}
+    .btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(124,58,237,.55)}
+    .btn-outline{background:transparent;color:#c4b5fd;border:1px solid rgba(168,85,247,.45)}
+    .btn-outline:hover{background:rgba(124,58,237,.15);transform:translateY(-2px)}
+    section{margin-bottom:60px;animation:fadeUp .6s ease both}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+    .section-label{font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#a78bfa;margin-bottom:6px}
+    h2{font-size:1.55rem;font-weight:700;margin-bottom:18px;color:#f1f5f9}
+    h3{font-size:1.1rem;font-weight:700;color:#f1f5f9;margin-bottom:12px}
+    .card{background:var(--card);backdrop-filter:blur(14px);border:1px solid var(--border);border-radius:18px;padding:26px 28px;transition:border-color .25s,box-shadow .25s,transform .25s;margin-bottom:16px}
+    .card:hover{border-color:rgba(168,85,247,.35);box-shadow:0 12px 40px rgba(0,0,0,.3),0 0 20px rgba(124,58,237,.12);transform:translateY(-2px)}
+    .card p{color:var(--muted);font-size:.9rem;line-height:1.8}
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    /* File tabs */
+    .file-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+    .file-tab{padding:7px 16px;border-radius:8px;font-size:.8rem;font-weight:600;border:1px solid var(--border);color:var(--muted);cursor:pointer;transition:all .2s;font-family:'Fira Code',monospace}
+    .file-tab.active,.file-tab:hover{background:rgba(124,58,237,.2);border-color:rgba(168,85,247,.5);color:#c4b5fd}
+    .file-panel{display:none}
+    .file-panel.active{display:block}
 
-    :root {
-      --purple: #7c3aed;
-      --pink:   #db2777;
-      --blue:   #2563eb;
-      --green:  #059669;
-      --bg:     #0f0923;
-      --card:   rgba(255,255,255,0.05);
-      --border: rgba(255,255,255,0.1);
-      --text:   #e2e8f0;
-      --muted:  rgba(203,213,225,0.6);
-    }
+    /* Code explanation block */
+    .code-block{background:rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.07);border-radius:14px;overflow:hidden;margin-bottom:20px}
+    .code-block-header{display:flex;align-items:center;justify-content:space-between;padding:10px 18px;background:rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.07)}
+    .code-file-name{font-family:'Fira Code',monospace;font-size:.78rem;color:#a78bfa;font-weight:500}
+    pre{padding:18px 20px;overflow-x:auto;font-family:'Fira Code',monospace;font-size:.82rem;line-height:1.75;color:#a5f3fc;margin:0}
+    .k{color:#c084fc}   /* keyword */
+    .t{color:#67e8f9}   /* type/class */
+    .s{color:#86efac}   /* string */
+    .n{color:#fda4af}   /* number */
+    .c{color:#64748b;font-style:italic}  /* comment */
+    .m{color:#fbbf24}   /* method */
+    .p{color:rgba(203,213,225,.4)}       /* punctuation */
 
-    html { scroll-behavior: smooth; }
+    /* Line explanation rows */
+    .explain-table{width:100%;border-collapse:collapse;margin-top:4px}
+    .explain-table tr{border-bottom:1px solid rgba(255,255,255,.05);transition:background .2s}
+    .explain-table tr:hover{background:rgba(124,58,237,.07)}
+    .explain-table td{padding:10px 14px;font-size:.84rem;vertical-align:top}
+    .line-num{color:rgba(168,85,247,.6);font-family:'Fira Code',monospace;font-size:.77rem;white-space:nowrap;width:40px;text-align:right;padding-right:16px;user-select:none}
+    .line-code{font-family:'Fira Code',monospace;color:#c4b5fd;font-size:.8rem;white-space:pre-wrap;word-break:break-all;width:38%}
+    .line-explain{color:var(--muted);line-height:1.65}
+    .line-explain strong{color:#f1f5f9;font-weight:600}
 
-    body {
-      font-family: 'Inter', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
+    /* Flow diagram */
+    .flow{display:flex;align-items:center;gap:0;flex-wrap:wrap;justify-content:center;margin:16px 0}
+    .flow-box{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;text-align:center;min-width:110px;transition:border-color .2s,transform .2s}
+    .flow-box:hover{border-color:rgba(168,85,247,.4);transform:scale(1.05)}
+    .flow-icon{font-size:1.4rem;margin-bottom:6px}
+    .flow-label{font-size:.72rem;font-weight:600;color:var(--muted)}
+    .flow-arrow{color:rgba(168,85,247,.6);font-size:1.4rem;padding:0 4px}
 
-    /* ── Animated BG ── */
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background:
-        radial-gradient(ellipse at 10% 10%, rgba(124,58,237,0.25) 0%, transparent 45%),
-        radial-gradient(ellipse at 90% 85%, rgba(37,99,235,0.2)   0%, transparent 45%),
-        radial-gradient(ellipse at 55% 50%, rgba(219,39,119,0.1)  0%, transparent 50%);
-      pointer-events: none;
-      z-index: 0;
-      animation: bgPulse 8s ease-in-out infinite alternate;
-    }
+    /* Stack grid */
+    .stack-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px}
+    .stack-item{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;text-align:center;transition:border-color .25s,transform .25s,box-shadow .25s}
+    .stack-item:hover{border-color:rgba(168,85,247,.4);transform:translateY(-4px);box-shadow:0 8px 24px rgba(124,58,237,.2)}
+    .stack-icon{font-size:1.8rem;margin-bottom:8px}
+    .stack-name{font-size:.9rem;font-weight:700;color:#f1f5f9;margin-bottom:3px}
+    .stack-desc{font-size:.74rem;color:var(--muted)}
 
-    @keyframes bgPulse {
-      from { opacity: 0.7; }
-      to   { opacity: 1; }
-    }
+    /* Badge pill */
+    .pill{display:inline-block;padding:3px 12px;border-radius:999px;font-size:.72rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;margin-right:6px}
+    .pill-purple{background:rgba(124,58,237,.2);border:1px solid rgba(168,85,247,.4);color:#c4b5fd}
+    .pill-green{background:rgba(5,150,105,.2);border:1px solid rgba(16,185,129,.4);color:#6ee7b7}
+    .pill-blue{background:rgba(37,99,235,.2);border:1px solid rgba(96,165,250,.4);color:#93c5fd}
+    .pill-pink{background:rgba(219,39,119,.2);border:1px solid rgba(244,114,182,.4);color:#f9a8d4}
+    .pill-yellow{background:rgba(217,119,6,.2);border:1px solid rgba(251,191,36,.4);color:#fde68a}
 
-    /* ── Floating particles ── */
-    .particles { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
-    .particle {
-      position: absolute;
-      width: 3px; height: 3px;
-      border-radius: 50%;
-      background: rgba(168,85,247,0.5);
-      animation: float linear infinite;
-    }
-    @keyframes float {
-      0%   { transform: translateY(110vh) scale(0); opacity: 0; }
-      10%  { opacity: 1; }
-      90%  { opacity: 0.6; }
-      100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }
-    }
-
-    /* ── Layout ── */
-    .wrap { max-width: 900px; margin: 0 auto; padding: 0 24px 80px; position: relative; z-index: 1; }
-
-    /* ── Hero ── */
-    .hero {
-      text-align: center;
-      padding: 90px 0 60px;
-      animation: fadeDown 0.8s ease both;
-    }
-    @keyframes fadeDown {
-      from { opacity: 0; transform: translateY(-30px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    .hero-badge {
-      display: inline-block;
-      background: linear-gradient(135deg, rgba(124,58,237,0.3), rgba(219,39,119,0.3));
-      border: 1px solid rgba(168,85,247,0.45);
-      color: #c4b5fd;
-      font-size: 0.78rem;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      padding: 6px 18px;
-      border-radius: 999px;
-      margin-bottom: 24px;
-    }
-
-    .hero h1 {
-      font-size: clamp(2.2rem, 5vw, 3.4rem);
-      font-weight: 800;
-      line-height: 1.15;
-      margin-bottom: 18px;
-      background: linear-gradient(135deg, #f8fafc 0%, #c084fc 40%, #60a5fa 70%, #f472b6 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      filter: drop-shadow(0 0 30px rgba(192,132,252,0.3));
-    }
-
-    .hero p {
-      font-size: 1.1rem;
-      color: var(--muted);
-      max-width: 580px;
-      margin: 0 auto 32px;
-      line-height: 1.75;
-    }
-
-    .hero-links { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 12px 24px;
-      border-radius: 10px;
-      font-size: 0.92rem;
-      font-weight: 600;
-      text-decoration: none;
-      transition: transform 0.2s, box-shadow 0.2s;
-      cursor: pointer;
-    }
-    .btn-primary {
-      background: linear-gradient(135deg, var(--purple), var(--pink));
-      color: #fff;
-      box-shadow: 0 4px 20px rgba(124,58,237,0.4);
-    }
-    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(124,58,237,0.55); }
-    .btn-outline {
-      background: transparent;
-      color: #c4b5fd;
-      border: 1px solid rgba(168,85,247,0.45);
-    }
-    .btn-outline:hover { background: rgba(124,58,237,0.15); transform: translateY(-2px); }
-
-    /* ── Section ── */
-    section {
-      margin-bottom: 56px;
-      animation: fadeUp 0.6s ease both;
-    }
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    .section-label {
-      font-size: 0.72rem;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: #a78bfa;
-      margin-bottom: 8px;
-    }
-
-    h2 {
-      font-size: 1.6rem;
-      font-weight: 700;
-      margin-bottom: 20px;
-      color: #f1f5f9;
-    }
-
-    /* ── Card ── */
-    .card {
-      background: var(--card);
-      backdrop-filter: blur(14px);
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 28px;
-      transition: border-color 0.25s, box-shadow 0.25s, transform 0.25s;
-    }
-    .card:hover {
-      border-color: rgba(168,85,247,0.35);
-      box-shadow: 0 12px 40px rgba(0,0,0,0.3), 0 0 20px rgba(124,58,237,0.12);
-      transform: translateY(-3px);
-    }
-
-    /* ── Tech stack grid ── */
-    .stack-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 16px;
-    }
-    .stack-item {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 20px;
-      text-align: center;
-      transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
-    }
-    .stack-item:hover {
-      border-color: rgba(168,85,247,0.4);
-      transform: translateY(-4px);
-      box-shadow: 0 8px 24px rgba(124,58,237,0.2);
-    }
-    .stack-icon { font-size: 2rem; margin-bottom: 10px; }
-    .stack-name { font-size: 0.95rem; font-weight: 700; color: #f1f5f9; margin-bottom: 4px; }
-    .stack-desc { font-size: 0.78rem; color: var(--muted); }
-
-    /* ── Feature list ── */
-    .feature-list { display: flex; flex-direction: column; gap: 14px; }
-    .feature-item {
-      display: flex;
-      gap: 16px;
-      align-items: flex-start;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 18px 20px;
-      transition: border-color 0.2s, transform 0.2s;
-    }
-    .feature-item:hover { border-color: rgba(168,85,247,0.3); transform: translateX(4px); }
-    .feature-icon {
-      width: 40px; height: 40px;
-      border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.2rem;
-      flex-shrink: 0;
-    }
-    .feature-icon.purple { background: rgba(124,58,237,0.2); }
-    .feature-icon.blue   { background: rgba(37,99,235,0.2); }
-    .feature-icon.pink   { background: rgba(219,39,119,0.2); }
-    .feature-icon.green  { background: rgba(5,150,105,0.2); }
-    .feature-icon.orange { background: rgba(234,88,12,0.2); }
-    .feature-text h4 { font-size: 0.95rem; font-weight: 700; color: #f1f5f9; margin-bottom: 4px; }
-    .feature-text p  { font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
-
-    /* ── Endpoints ── */
-    .endpoint {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 22px 24px;
-      margin-bottom: 14px;
-      transition: border-color 0.2s;
-    }
-    .endpoint:hover { border-color: rgba(168,85,247,0.3); }
-    .endpoint-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
-    .method {
-      font-family: 'Fira Code', monospace;
-      font-size: 0.78rem;
-      font-weight: 600;
-      padding: 3px 10px;
-      border-radius: 6px;
-    }
-    .method.post { background: rgba(219,39,119,0.2); color: #f9a8d4; border: 1px solid rgba(219,39,119,0.3); }
-    .endpoint-path {
-      font-family: 'Fira Code', monospace;
-      font-size: 0.92rem;
-      color: #c4b5fd;
-    }
-    .endpoint p { color: var(--muted); font-size: 0.88rem; line-height: 1.6; margin-bottom: 12px; }
-
-    /* ── Code block ── */
-    pre {
-      background: rgba(0,0,0,0.4);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 12px;
-      padding: 18px 20px;
-      overflow-x: auto;
-      font-family: 'Fira Code', monospace;
-      font-size: 0.82rem;
-      line-height: 1.7;
-      color: #a5f3fc;
-    }
-    pre .key   { color: #c4b5fd; }
-    pre .str   { color: #86efac; }
-    pre .num   { color: #fda4af; }
-    pre .punct { color: rgba(203,213,225,0.5); }
-
-    /* ── Steps ── */
-    .steps { display: flex; flex-direction: column; gap: 0; }
-    .step  { display: flex; gap: 20px; }
-    .step-left { display: flex; flex-direction: column; align-items: center; }
-    .step-num {
-      width: 36px; height: 36px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--purple), var(--pink));
-      display: flex; align-items: center; justify-content: center;
-      font-size: 0.85rem;
-      font-weight: 800;
-      color: #fff;
-      flex-shrink: 0;
-      box-shadow: 0 0 16px rgba(124,58,237,0.5);
-    }
-    .step-line {
-      width: 2px;
-      flex: 1;
-      background: linear-gradient(to bottom, rgba(124,58,237,0.4), transparent);
-      margin: 6px 0;
-      min-height: 28px;
-    }
-    .step:last-child .step-line { display: none; }
-    .step-body { padding-bottom: 28px; }
-    .step-body h4 { font-size: 0.95rem; font-weight: 700; color: #f1f5f9; margin-bottom: 6px; margin-top: 6px; }
-    .step-body p  { font-size: 0.86rem; color: var(--muted); line-height: 1.65; }
-    .step-body code {
-      font-family: 'Fira Code', monospace;
-      font-size: 0.82rem;
-      background: rgba(124,58,237,0.18);
-      border: 1px solid rgba(168,85,247,0.25);
-      color: #c4b5fd;
-      padding: 2px 8px;
-      border-radius: 5px;
-    }
-
-    /* ── How it works flow ── */
-    .flow {
-      display: flex;
-      align-items: center;
-      gap: 0;
-      flex-wrap: wrap;
-      justify-content: center;
-      margin-top: 10px;
-    }
-    .flow-box {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 14px 18px;
-      text-align: center;
-      min-width: 120px;
-      transition: border-color 0.2s, transform 0.2s;
-    }
-    .flow-box:hover { border-color: rgba(168,85,247,0.4); transform: scale(1.04); }
-    .flow-box .flow-icon { font-size: 1.5rem; margin-bottom: 6px; }
-    .flow-box .flow-label { font-size: 0.76rem; font-weight: 600; color: var(--muted); }
-    .flow-arrow { color: rgba(168,85,247,0.55); font-size: 1.4rem; padding: 0 6px; }
-
-    /* ── Footer ── */
-    footer {
-      text-align: center;
-      padding: 40px 0 20px;
-      color: var(--muted);
-      font-size: 0.85rem;
-      position: relative;
-      z-index: 1;
-      border-top: 1px solid var(--border);
-    }
-    footer span {
-      background: linear-gradient(135deg, #c084fc, #f472b6);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      font-weight: 700;
-    }
-
-    /* ── Nav ── */
-    nav {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: rgba(15,9,35,0.85);
-      backdrop-filter: blur(20px);
-      border-bottom: 1px solid var(--border);
-      padding: 14px 24px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      flex-wrap: wrap;
-    }
-    .nav-brand {
-      font-size: 1rem;
-      font-weight: 800;
-      background: linear-gradient(135deg, #c084fc, #60a5fa);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    .nav-links { display: flex; gap: 20px; flex-wrap: wrap; }
-    .nav-links a {
-      color: var(--muted);
-      text-decoration: none;
-      font-size: 0.88rem;
-      font-weight: 500;
-      transition: color 0.2s;
-    }
-    .nav-links a:hover { color: #c4b5fd; }
-
-    /* ── Scroll reveal ── */
-    .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
-    .reveal.visible { opacity: 1; transform: translateY(0); }
+    footer{text-align:center;padding:40px 0 20px;color:var(--muted);font-size:.84rem;position:relative;z-index:1;border-top:1px solid var(--border)}
+    footer span{background:linear-gradient(135deg,#c084fc,#f472b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:700}
+    .reveal{opacity:0;transform:translateY(22px);transition:opacity .6s ease,transform .6s ease}
+    .reveal.visible{opacity:1;transform:translateY(0)}
+    .divider{height:1px;background:linear-gradient(90deg,transparent,rgba(168,85,247,.3),transparent);margin:40px 0}
   </style>
 </head>
 <body>
 
-<!-- Floating particles -->
 <div class="particles" id="particles"></div>
 
-<!-- Nav -->
 <nav>
-  <span class="nav-brand">🎬 MovieAI Docs</span>
+  <span class="nav-brand">🎬 MovieAI — Full Code Docs</span>
   <div class="nav-links">
     <a href="#overview">Overview</a>
-    <a href="#tech">Tech Stack</a>
-    <a href="#features">Features</a>
-    <a href="#api">API</a>
-    <a href="#setup">Setup</a>
     <a href="#how">How It Works</a>
+    <a href="#stack">Tech Stack</a>
+    <a href="#program">Program.cs</a>
+    <a href="#dbcontext">AppDbContext</a>
+    <a href="#controller">Controller</a>
+    <a href="#frontend">Frontend</a>
+    <a href="#flow">Full Flow</a>
   </div>
 </nav>
 
@@ -413,267 +124,280 @@
 
   <!-- Hero -->
   <div class="hero">
-    <div class="hero-badge">📄 Project Documentation</div>
     <h1>AI Movie Recommendation Engine</h1>
-    <p>A full-stack AI-powered application that understands your mood and recommends the perfect movie using vector embeddings and semantic similarity search.</p>
     <div class="hero-links">
-      <a class="btn btn-primary" href="https://github.com/adhilmohammad861/AI-Movie-Recommendation-Engine" target="_blank">⭐ View on GitHub</a>
-      <a class="btn btn-outline" href="#setup">🚀 Quick Start</a>
+      <a class="btn btn-primary" href="https://github.com/adhilmohammad861/AI-Movie-Recommendation-Engine" target="_blank">⭐ GitHub Repository</a>
+      <a class="btn btn-outline" href="#program">📄 Start Reading Code</a>
     </div>
   </div>
 
   <!-- Overview -->
   <section id="overview" class="reveal">
     <div class="section-label">01 — Overview</div>
-    <h2>What is this project?</h2>
+    <h2>What Does This App Do?</h2>
     <div class="card">
-      <p style="color:var(--muted);line-height:1.8;font-size:0.95rem;">
-        The <strong style="color:#f1f5f9;">AI Movie Recommendation Engine</strong> lets users type a mood or vibe (e.g. <em>"something funny with a twist ending"</em>) and instantly get semantically relevant movie recommendations. It uses <strong style="color:#c4b5fd;">OpenAI text embeddings</strong> to convert both the movie descriptions and the user's mood into mathematical vectors, then performs a <strong style="color:#c4b5fd;">cosine similarity search</strong> in PostgreSQL with the <strong style="color:#c4b5fd;">pgvector</strong> extension to find the best matches — no keyword matching, pure AI understanding.
-      </p>
+      <p>You type a <strong style="color:#f1f5f9;">mood or feeling</strong> — like <em>"something funny but emotional"</em> or <em>"thrilling with a twist"</em> — and the app uses <strong style="color:#c4b5fd;">OpenAI's AI</strong> to understand the <em>meaning</em> of your words. It then searches 30 movies stored in <strong style="color:#c4b5fd;">PostgreSQL</strong> to find the ones whose descriptions are <em>semantically closest</em> to your mood, and returns the Top 3 with a % match score.</p>
+    </div>
+    <div class="card">
+      <p><strong style="color:#f1f5f9;">🔑 Key concept — Vector Embeddings:</strong> OpenAI converts text into a list of 1536 numbers (called a vector). Similar meanings produce similar vectors. The database finds movies whose vectors are closest to your mood vector using a mathematical formula called <strong style="color:#c4b5fd;">cosine similarity</strong>. This is how AI "understands" language.</p>
     </div>
   </section>
 
-  <!-- Tech Stack -->
-  <section id="tech" class="reveal">
-    <div class="section-label">02 — Tech Stack</div>
+  <!-- How it works high level -->
+  <section id="how" class="reveal">
+    <div class="section-label">02 — How It Works</div>
+    <h2>The Big Picture Flow</h2>
+    <div class="card">
+      <div class="flow">
+        <div class="flow-box"><div class="flow-icon">⌨️</div><div class="flow-label">User types mood</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box"><div class="flow-icon">⚛️</div><div class="flow-label">React sends POST request</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box"><div class="flow-icon">⚙️</div><div class="flow-label">.NET API receives it</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box"><div class="flow-icon">🤖</div><div class="flow-label">OpenAI converts mood → 1536 numbers</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box"><div class="flow-icon">🐘</div><div class="flow-label">PostgreSQL finds closest movies</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box"><div class="flow-icon">🎬</div><div class="flow-label">Top 3 shown + % match</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tech stack -->
+  <section id="stack" class="reveal">
+    <div class="section-label">03 — Tech Stack</div>
     <h2>Technologies Used</h2>
     <div class="stack-grid">
-      <div class="stack-item">
-        <div class="stack-icon">⚙️</div>
-        <div class="stack-name">.NET 10</div>
-        <div class="stack-desc">Backend Web API (C#)</div>
-      </div>
-      <div class="stack-item">
-        <div class="stack-icon">⚛️</div>
-        <div class="stack-name">React 18 + Vite</div>
-        <div class="stack-desc">Frontend UI</div>
-      </div>
-      <div class="stack-item">
-        <div class="stack-icon">🐘</div>
-        <div class="stack-name">PostgreSQL 18</div>
-        <div class="stack-desc">Database</div>
-      </div>
-      <div class="stack-item">
-        <div class="stack-icon">🔢</div>
-        <div class="stack-name">pgvector</div>
-        <div class="stack-desc">Vector similarity search</div>
-      </div>
-      <div class="stack-item">
-        <div class="stack-icon">🤖</div>
-        <div class="stack-name">OpenAI API</div>
-        <div class="stack-desc">text-embedding-3-small</div>
-      </div>
-      <div class="stack-item">
-        <div class="stack-icon">🗄️</div>
-        <div class="stack-name">EF Core</div>
-        <div class="stack-desc">Database ORM</div>
-      </div>
+      <div class="stack-item"><div class="stack-icon">⚙️</div><div class="stack-name">.NET 10</div><div class="stack-desc">Backend Web API in C#. Handles requests, calls OpenAI, queries the DB.</div></div>
+      <div class="stack-item"><div class="stack-icon">⚛️</div><div class="stack-name">React 18 + Vite</div><div class="stack-desc">Frontend UI. Single page app. Sends requests and shows results.</div></div>
+      <div class="stack-item"><div class="stack-icon">🐘</div><div class="stack-name">PostgreSQL 18</div><div class="stack-desc">Database. Stores all 30 movies + their AI-generated vector embeddings.</div></div>
+      <div class="stack-item"><div class="stack-icon">🔢</div><div class="stack-name">pgvector</div><div class="stack-desc">PostgreSQL extension. Adds vector column type and cosine similarity search (<code style="color:#c4b5fd;font-family:monospace">&lt;=&gt;</code>).</div></div>
+      <div class="stack-item"><div class="stack-icon">🤖</div><div class="stack-name">OpenAI API</div><div class="stack-desc">text-embedding-3-small model. Converts text → 1536-dimension float arrays.</div></div>
+      <div class="stack-item"><div class="stack-icon">🗄️</div><div class="stack-name">EF Core</div><div class="stack-desc">Object-Relational Mapper. Lets C# code talk to PostgreSQL without raw SQL for normal operations.</div></div>
     </div>
   </section>
 
-  <!-- Features -->
-  <section id="features" class="reveal">
-    <div class="section-label">03 — Features</div>
-    <h2>Key Features</h2>
-    <div class="feature-list">
-      <div class="feature-item">
-        <div class="feature-icon purple">🧠</div>
-        <div class="feature-text">
-          <h4>Semantic Mood Search</h4>
-          <p>Type any mood or vibe in natural language. The AI understands meaning, not just keywords — "sad but hopeful" finds emotionally matching films.</p>
-        </div>
+  <div class="divider"></div>
+
+  <!-- Program.cs -->
+  <section id="program" class="reveal">
+    <div class="section-label">04 — Backend Entry Point</div>
+    <h2>Program.cs — Line by Line</h2>
+    <p style="color:var(--muted);font-size:.9rem;margin-bottom:20px;line-height:1.7">This is the <strong style="color:#f1f5f9;">first file that runs</strong> when the backend starts. It sets up all services (database, OpenAI, CORS) and creates the database table automatically.</p>
+
+    <div class="code-block">
+      <div class="code-block-header">
+        <span class="code-file-name">MovieApi/Program.cs</span>
+        <span class="pill pill-green">Entry Point</span>
       </div>
-      <div class="feature-item">
-        <div class="feature-icon blue">📐</div>
-        <div class="feature-text">
-          <h4>Vector Embeddings (1536 dimensions)</h4>
-          <p>Every movie description is converted to a 1536-dimensional float vector using OpenAI's <code style="color:#c4b5fd;background:rgba(124,58,237,0.15);padding:1px 6px;border-radius:4px;font-family:monospace;">text-embedding-3-small</code> model and stored permanently in PostgreSQL.</p>
-        </div>
-      </div>
-      <div class="feature-item">
-        <div class="feature-icon pink">🎯</div>
-        <div class="feature-text">
-          <h4>Cosine Similarity Ranking</h4>
-          <p>Uses the pgvector <code style="color:#c4b5fd;background:rgba(124,58,237,0.15);padding:1px 6px;border-radius:4px;font-family:monospace;">&lt;=&gt;</code> operator for cosine distance. Returns Top 3 matches with a % match score.</p>
-        </div>
-      </div>
-      <div class="feature-item">
-        <div class="feature-icon green">🌱</div>
-        <div class="feature-text">
-          <h4>Auto Database Seeding</h4>
-          <p>30 hardcoded movies are seeded automatically on first run. The <code style="color:#c4b5fd;background:rgba(124,58,237,0.15);padding:1px 6px;border-radius:4px;font-family:monospace;">POST /api/seed</code> endpoint is idempotent — safe to call multiple times.</p>
-        </div>
-      </div>
-      <div class="feature-item">
-        <div class="feature-icon orange">🔒</div>
-        <div class="feature-text">
-          <h4>Secure Secrets Management</h4>
-          <p>API keys and DB credentials stored in <code style="color:#c4b5fd;background:rgba(124,58,237,0.15);padding:1px 6px;border-radius:4px;font-family:monospace;">appsettings.Development.json</code> which is excluded from Git via <code style="color:#c4b5fd;background:rgba(124,58,237,0.15);padding:1px 6px;border-radius:4px;font-family:monospace;">.gitignore</code>.</p>
-        </div>
-      </div>
+      <table class="explain-table">
+        <tr><td class="line-num">1</td><td class="line-code">using Microsoft.EntityFrameworkCore;</td><td class="line-explain"><strong>Import</strong> the EF Core library so we can use <code style="color:#c4b5fd;font-family:monospace">DbContext</code>, <code style="color:#c4b5fd;font-family:monospace">UseNpgsql()</code> etc.</td></tr>
+        <tr><td class="line-num">2</td><td class="line-code">using MovieApi.Data;</td><td class="line-explain"><strong>Import</strong> our own <code style="color:#c4b5fd;font-family:monospace">AppDbContext</code> class from the Data folder.</td></tr>
+        <tr><td class="line-num">3</td><td class="line-code">using OpenAI;</td><td class="line-explain"><strong>Import</strong> the OpenAI NuGet package so we can create an <code style="color:#c4b5fd;font-family:monospace">OpenAIClient</code>.</td></tr>
+        <tr><td class="line-num">5</td><td class="line-code">var builder = WebApplication.CreateBuilder(args);</td><td class="line-explain"><strong>Creates the app builder.</strong> This reads configuration files (appsettings.json), sets up logging, and prepares the dependency injection container. <code style="color:#c4b5fd;font-family:monospace">args</code> are command-line arguments.</td></tr>
+        <tr><td class="line-num">8–12</td><td class="line-code">builder.Services.AddDbContext&lt;AppDbContext&gt;(options =&gt; options.UseNpgsql(..., o =&gt; o.UseVector()))</td><td class="line-explain"><strong>Registers the database.</strong> <code style="color:#c4b5fd;font-family:monospace">AddDbContext</code> tells .NET "whenever someone asks for AppDbContext, create one connected to PostgreSQL." <code style="color:#c4b5fd;font-family:monospace">UseNpgsql</code> uses the Npgsql driver. <code style="color:#c4b5fd;font-family:monospace">UseVector()</code> enables pgvector support so EF Core knows about the <code style="color:#c4b5fd;font-family:monospace">vector(1536)</code> column type.</td></tr>
+        <tr><td class="line-num">15–17</td><td class="line-code">builder.Services.AddSingleton(new OpenAIClient(builder.Configuration["OpenAI:ApiKey"]!))</td><td class="line-explain"><strong>Registers the OpenAI client as a singleton</strong> (one instance shared for the whole app lifetime). Reads the API key from <code style="color:#c4b5fd;font-family:monospace">appsettings.Development.json</code> using the path <code style="color:#c4b5fd;font-family:monospace">OpenAI:ApiKey</code>. The <code style="color:#c4b5fd;font-family:monospace">!</code> asserts the value is not null.</td></tr>
+        <tr><td class="line-num">20–27</td><td class="line-code">builder.Services.AddCors(...WithOrigins("http://localhost:5173")...)</td><td class="line-explain"><strong>CORS (Cross-Origin Resource Sharing) setup.</strong> Browsers block requests from one domain to another by default. This tells the API "allow requests coming from the React app at port 5173." Without this, the browser would reject all API calls from the frontend.</td></tr>
+        <tr><td class="line-num">29</td><td class="line-code">builder.Services.AddControllers();</td><td class="line-explain"><strong>Registers controller support.</strong> This enables the MVC pattern so .NET knows to look for classes ending in <code style="color:#c4b5fd;font-family:monospace">Controller</code> and route HTTP requests to them.</td></tr>
+        <tr><td class="line-num">31</td><td class="line-code">var app = builder.Build();</td><td class="line-explain"><strong>Builds the final app</strong> from everything registered above. After this line, no more services can be added — the app is compiled and ready.</td></tr>
+        <tr><td class="line-num">34–49</td><td class="line-code">using (var scope = app.Services.CreateScope()) { await db.Database.ExecuteSqlRawAsync(...) }</td><td class="line-explain"><strong>Auto-creates the database table on every startup.</strong> <code style="color:#c4b5fd;font-family:monospace">CREATE EXTENSION IF NOT EXISTS vector</code> — installs pgvector if not already installed. <code style="color:#c4b5fd;font-family:monospace">CREATE TABLE IF NOT EXISTS movies</code> — creates the movies table with all columns including <code style="color:#c4b5fd;font-family:monospace">vector(1536)</code>. <code style="color:#c4b5fd;font-family:monospace">IF NOT EXISTS</code> means this is safe to run every time — it won't delete existing data.</td></tr>
+        <tr><td class="line-num">51</td><td class="line-code">app.UseCors();</td><td class="line-explain"><strong>Activates CORS middleware</strong> in the request pipeline. The configuration was registered earlier — this line actually turns it on. Order matters: must be before <code style="color:#c4b5fd;font-family:monospace">MapControllers</code>.</td></tr>
+        <tr><td class="line-num">52</td><td class="line-code">app.MapControllers();</td><td class="line-explain"><strong>Maps all controller endpoints</strong> to URLs. This scans all classes with <code style="color:#c4b5fd;font-family:monospace">[ApiController]</code> and registers their <code style="color:#c4b5fd;font-family:monospace">[HttpPost]</code> / <code style="color:#c4b5fd;font-family:monospace">[HttpGet]</code> methods as HTTP endpoints.</td></tr>
+        <tr><td class="line-num">53</td><td class="line-code">app.Run();</td><td class="line-explain"><strong>Starts the web server</strong> and listens for incoming HTTP requests. The app stays running here until you stop it (Ctrl+C).</td></tr>
+      </table>
     </div>
   </section>
 
-  <!-- API Reference -->
-  <section id="api" class="reveal">
-    <div class="section-label">04 — API Reference</div>
-    <h2>REST Endpoints</h2>
+  <div class="divider"></div>
 
-    <div class="endpoint">
-      <div class="endpoint-header">
-        <span class="method post">POST</span>
-        <span class="endpoint-path">/api/seed</span>
-      </div>
-      <p>Seeds the database with 30 movies and generates OpenAI embeddings for each. Idempotent — skips movies already seeded.</p>
-      <pre><span class="punct">{</span>  <span class="key">"seededCount"</span><span class="punct">:</span> <span class="num">30</span>  <span class="punct">}</span></pre>
-    </div>
+  <!-- AppDbContext -->
+  <section id="dbcontext" class="reveal">
+    <div class="section-label">05 — Database Context</div>
+    <h2>AppDbContext.cs — Line by Line</h2>
+    <p style="color:var(--muted);font-size:.9rem;margin-bottom:20px;line-height:1.7">This file is the <strong style="color:#f1f5f9;">bridge between C# objects and the PostgreSQL database</strong>. It tells EF Core exactly which C# class maps to which table, and which property maps to which column.</p>
 
-    <div class="endpoint">
-      <div class="endpoint-header">
-        <span class="method post">POST</span>
-        <span class="endpoint-path">/api/recommend</span>
+    <div class="code-block">
+      <div class="code-block-header">
+        <span class="code-file-name">MovieApi/Data/AppDbContext.cs</span>
+        <span class="pill pill-blue">Database Layer</span>
       </div>
-      <p>Accepts a mood string, generates an embedding, and returns Top 3 semantically similar movies with match scores.</p>
-      <p><strong style="color:#f1f5f9;font-size:0.82rem;">Request body:</strong></p>
-      <pre style="margin-bottom:12px;"><span class="punct">{</span>
-  <span class="key">"mood"</span><span class="punct">:</span> <span class="str">"funny with a twist ending"</span>
-<span class="punct">}</span></pre>
-      <p><strong style="color:#f1f5f9;font-size:0.82rem;">Response:</strong></p>
-      <pre><span class="punct">[</span>
-  <span class="punct">{</span>
-    <span class="key">"title"</span><span class="punct">:</span>       <span class="str">"Pulp Fiction"</span><span class="punct">,</span>
-    <span class="key">"genre"</span><span class="punct">:</span>       <span class="str">"Crime / Drama"</span><span class="punct">,</span>
-    <span class="key">"description"</span><span class="punct">:</span> <span class="str">"Interwoven stories of crime..."</span><span class="punct">,</span>
-    <span class="key">"score"</span><span class="punct">:</span>       <span class="num">0.36</span>
-  <span class="punct">}</span><span class="punct">,</span>
-  <span class="punct">...</span>
-<span class="punct">]</span></pre>
+      <table class="explain-table">
+        <tr><td class="line-num">1–3</td><td class="line-code">using Microsoft.EntityFrameworkCore; using MovieApi.Models; using Pgvector.EntityFrameworkCore;</td><td class="line-explain"><strong>Imports.</strong> EF Core for database operations. Our own Movie model. Pgvector EF Core integration for the <code style="color:#c4b5fd;font-family:monospace">vector</code> column type.</td></tr>
+        <tr><td class="line-num">7</td><td class="line-code">public class AppDbContext : DbContext</td><td class="line-explain"><strong>Inherits from DbContext</strong> — the EF Core base class. This is what gives our class the ability to query the database, save changes, and run migrations.</td></tr>
+        <tr><td class="line-num">9</td><td class="line-code">public AppDbContext(DbContextOptions&lt;AppDbContext&gt; options) : base(options) { }</td><td class="line-explain"><strong>Constructor.</strong> Receives database options (connection string, driver type) from dependency injection and passes them to the parent <code style="color:#c4b5fd;font-family:monospace">DbContext</code>. This is how the connection string from <code style="color:#c4b5fd;font-family:monospace">appsettings.json</code> reaches EF Core.</td></tr>
+        <tr><td class="line-num">11</td><td class="line-code">public DbSet&lt;Movie&gt; Movies =&gt; Set&lt;Movie&gt;();</td><td class="line-explain"><strong>Declares the Movies table.</strong> <code style="color:#c4b5fd;font-family:monospace">DbSet&lt;Movie&gt;</code> represents a table in the database. You can query it like: <code style="color:#c4b5fd;font-family:monospace">_db.Movies.Where(...)</code>. The <code style="color:#c4b5fd;font-family:monospace">Set&lt;Movie&gt;()</code> returns the EF Core set for that type.</td></tr>
+        <tr><td class="line-num">13–37</td><td class="line-code">protected override void OnModelCreating(ModelBuilder modelBuilder)</td><td class="line-explain"><strong>Configuration method</strong> called by EF Core when it builds the database schema model. This is where we customise how C# classes map to database tables/columns.</td></tr>
+        <tr><td class="line-num">15</td><td class="line-code">modelBuilder.HasPostgresExtension("vector");</td><td class="line-explain"><strong>Tells EF Core migrations</strong> that the pgvector extension is required. This ensures <code style="color:#c4b5fd;font-family:monospace">CREATE EXTENSION vector</code> is included in any future migrations.</td></tr>
+        <tr><td class="line-num">18</td><td class="line-code">entity.ToTable("movies");</td><td class="line-explain"><strong>Critical mapping.</strong> By default EF Core would look for a table called <code style="color:#c4b5fd;font-family:monospace">"Movies"</code> (PascalCase). But PostgreSQL uses lowercase <code style="color:#c4b5fd;font-family:monospace">"movies"</code>. This line fixes that mismatch.</td></tr>
+        <tr><td class="line-num">19–23</td><td class="line-code">entity.Property(m =&gt; m.Title).HasColumnName("title");</td><td class="line-explain"><strong>Column name mapping.</strong> Same reason as above — EF Core defaults to PascalCase column names like <code style="color:#c4b5fd;font-family:monospace">"Title"</code>, but PostgreSQL has <code style="color:#c4b5fd;font-family:monospace">"title"</code>. Each property is explicitly mapped to its lowercase snake_case column name.</td></tr>
+        <tr><td class="line-num">24–26</td><td class="line-code">entity.Property(m =&gt; m.Embedding).HasColumnName("embedding").HasColumnType("vector(1536)");</td><td class="line-explain"><strong>Vector column setup.</strong> Maps the <code style="color:#c4b5fd;font-family:monospace">Embedding</code> property to the <code style="color:#c4b5fd;font-family:monospace">embedding</code> column of type <code style="color:#c4b5fd;font-family:monospace">vector(1536)</code>. The 1536 is the dimension size — OpenAI's text-embedding-3-small always produces exactly 1536 numbers.</td></tr>
+        <tr><td class="line-num">30–34</td><td class="line-code">modelBuilder.Entity&lt;MovieQueryResult&gt;(entity =&gt; { entity.HasNoKey(); });</td><td class="line-explain"><strong>Keyless entity.</strong> <code style="color:#c4b5fd;font-family:monospace">MovieQueryResult</code> is not a real table — it's just a C# class to hold results from a raw SQL query. <code style="color:#c4b5fd;font-family:monospace">HasNoKey()</code> tells EF Core "this is not a real entity with a primary key, just a result shape."</td></tr>
+      </table>
     </div>
   </section>
 
-  <!-- Setup -->
-  <section id="setup" class="reveal">
-    <div class="section-label">05 — Setup Guide</div>
-    <h2>How to Run Locally</h2>
-    <div class="steps">
-      <div class="step">
-        <div class="step-left"><div class="step-num">1</div><div class="step-line"></div></div>
-        <div class="step-body">
-          <h4>Prerequisites</h4>
-          <p>Install <code>.NET 10 SDK</code>, <code>Node.js LTS</code>, <code>PostgreSQL 18</code> with the <code>pgvector</code> extension, and get an <code>OpenAI API key</code>.</p>
-        </div>
+  <div class="divider"></div>
+
+  <!-- Controller -->
+  <section id="controller" class="reveal">
+    <div class="section-label">06 — API Controller</div>
+    <h2>MovieController.cs — Line by Line</h2>
+    <p style="color:var(--muted);font-size:.9rem;margin-bottom:20px;line-height:1.7">This is the <strong style="color:#f1f5f9;">heart of the application</strong>. It contains the two API endpoints: one to seed movies into the database, and one to find movies matching your mood using AI.</p>
+
+    <div class="code-block">
+      <div class="code-block-header">
+        <span class="code-file-name">MovieController.cs — Class Setup &amp; Constructor</span>
+        <span class="pill pill-pink">API Controller</span>
       </div>
-      <div class="step">
-        <div class="step-left"><div class="step-num">2</div><div class="step-line"></div></div>
-        <div class="step-body">
-          <h4>Create the database</h4>
-          <p>In PostgreSQL, create a database named <code>moviedb</code>. The table and pgvector extension are created automatically on first run.</p>
-        </div>
+      <table class="explain-table">
+        <tr><td class="line-num">13</td><td class="line-code">[ApiController]</td><td class="line-explain"><strong>Attribute</strong> that marks this class as an API controller. Enables automatic model validation, binding source inference (reads JSON body automatically), and proper error responses.</td></tr>
+        <tr><td class="line-num">14</td><td class="line-code">[Route("api")]</td><td class="line-explain"><strong>Sets the base URL prefix.</strong> All endpoints in this class start with <code style="color:#c4b5fd;font-family:monospace">/api</code>. So <code style="color:#c4b5fd;font-family:monospace">[HttpPost("seed")]</code> becomes <code style="color:#c4b5fd;font-family:monospace">POST /api/seed</code>.</td></tr>
+        <tr><td class="line-num">17–18</td><td class="line-code">private readonly AppDbContext _db; private readonly OpenAIClient _openAI;</td><td class="line-explain"><strong>Private fields.</strong> Store references to the database context and OpenAI client. <code style="color:#c4b5fd;font-family:monospace">readonly</code> means these cannot be reassigned after the constructor runs.</td></tr>
+        <tr><td class="line-num">20–23</td><td class="line-code">public MovieController(AppDbContext db, OpenAIClient openAI) { _db = db; _openAI = openAI; }</td><td class="line-explain"><strong>Constructor with Dependency Injection.</strong> .NET's IoC container automatically provides the <code style="color:#c4b5fd;font-family:monospace">AppDbContext</code> and <code style="color:#c4b5fd;font-family:monospace">OpenAIClient</code> when creating this controller — you never call <code style="color:#c4b5fd;font-family:monospace">new MovieController()</code> yourself.</td></tr>
+      </table>
+    </div>
+
+    <div class="code-block">
+      <div class="code-block-header">
+        <span class="code-file-name">MovieController.cs — Helper Methods</span>
+        <span class="pill pill-purple">Helpers</span>
       </div>
-      <div class="step">
-        <div class="step-left"><div class="step-num">3</div><div class="step-line"></div></div>
-        <div class="step-body">
-          <h4>Configure secrets</h4>
-          <p>Create <code>MovieApi/appsettings.Development.json</code> with your connection string and OpenAI key:</p>
-          <pre style="margin-top:10px;"><span class="punct">{</span>
-  <span class="key">"ConnectionStrings"</span><span class="punct">: {</span>
-    <span class="key">"DefaultConnection"</span><span class="punct">:</span> <span class="str">"Host=localhost;Database=moviedb;Username=postgres;Password=YOUR_PW"</span>
-  <span class="punct">},</span>
-  <span class="key">"OpenAI"</span><span class="punct">: {</span>
-    <span class="key">"ApiKey"</span><span class="punct">:</span> <span class="str">"sk-..."</span>
-  <span class="punct">}</span>
-<span class="punct">}</span></pre>
-        </div>
+      <table class="explain-table">
+        <tr><td class="line-num">GetEmbeddingAsync</td><td class="line-code">EmbeddingClient client = _openAI.GetEmbeddingClient("text-embedding-3-small");</td><td class="line-explain"><strong>Gets the embedding client</strong> for a specific OpenAI model. <code style="color:#c4b5fd;font-family:monospace">text-embedding-3-small</code> is the model name — it converts text to 1536-dimensional vectors. It's fast and cost-effective.</td></tr>
+        <tr><td class="line-num"></td><td class="line-code">OpenAIEmbedding embedding = await client.GenerateEmbeddingAsync(text);</td><td class="line-explain"><strong>Calls the OpenAI API.</strong> Sends your text over the internet to OpenAI's servers. <code style="color:#c4b5fd;font-family:monospace">await</code> means the code waits for the response without blocking the server. Returns an embedding object.</td></tr>
+        <tr><td class="line-num"></td><td class="line-code">return embedding.ToFloats().ToArray();</td><td class="line-explain"><strong>Extracts the actual numbers.</strong> <code style="color:#c4b5fd;font-family:monospace">ToFloats()</code> gets the 1536 floating-point numbers. <code style="color:#c4b5fd;font-family:monospace">ToArray()</code> converts from a span to a regular <code style="color:#c4b5fd;font-family:monospace">float[]</code> array.</td></tr>
+        <tr><td class="line-num">ToVectorString</td><td class="line-code">"[" + string.Join(",", floats.Select(f =&gt; f.ToString("G", CultureInfo.InvariantCulture))) + "]"</td><td class="line-explain"><strong>Converts float[] to PostgreSQL vector format.</strong> pgvector expects vectors as strings like <code style="color:#c4b5fd;font-family:monospace">[0.123,0.456,...]</code>. <code style="color:#c4b5fd;font-family:monospace">InvariantCulture</code> is important — it ensures decimals use <code style="color:#c4b5fd;font-family:monospace">.</code> not <code style="color:#c4b5fd;font-family:monospace">,</code> regardless of what country settings the server has.</td></tr>
+      </table>
+    </div>
+
+    <div class="code-block">
+      <div class="code-block-header">
+        <span class="code-file-name">MovieController.cs — POST /api/seed</span>
+        <span class="pill pill-green">Seed Endpoint</span>
       </div>
-      <div class="step">
-        <div class="step-left"><div class="step-num">4</div><div class="step-line"></div></div>
-        <div class="step-body">
-          <h4>Start the backend</h4>
-          <pre>$env:ASPNETCORE_ENVIRONMENT="Development"
-cd MovieApi
-dotnet run</pre>
-          <p style="margin-top:8px;">API starts on <code>http://localhost:5000</code></p>
-        </div>
+      <table class="explain-table">
+        <tr><td class="line-num">1</td><td class="line-code">[HttpPost("seed")]</td><td class="line-explain"><strong>Registers this method as a POST endpoint</strong> at the URL <code style="color:#c4b5fd;font-family:monospace">POST /api/seed</code>. Call this once to fill the database with movies.</td></tr>
+        <tr><td class="line-num">2</td><td class="line-code">int count = 0;</td><td class="line-explain"><strong>Counter</strong> to track how many new movies were actually inserted (vs skipped because they already exist).</td></tr>
+        <tr><td class="line-num">3</td><td class="line-code">foreach (var (title, genre, description) in SeedMovies)</td><td class="line-explain"><strong>Loops through all 30 hardcoded movies.</strong> Uses tuple deconstruction — each movie is a <code style="color:#c4b5fd;font-family:monospace">(string Title, string Genre, string Description)</code> tuple.</td></tr>
+        <tr><td class="line-num">4</td><td class="line-code">if (await _db.Movies.AnyAsync(m =&gt; m.Title == title)) continue;</td><td class="line-explain"><strong>Idempotency check.</strong> <code style="color:#c4b5fd;font-family:monospace">AnyAsync</code> runs <code style="color:#c4b5fd;font-family:monospace">SELECT EXISTS(...)</code> in the DB. If a movie with the same title already exists, <code style="color:#c4b5fd;font-family:monospace">continue</code> skips it. This makes the seed endpoint safe to call multiple times without duplicating data.</td></tr>
+        <tr><td class="line-num">5</td><td class="line-code">float[] floats = await GetEmbeddingAsync(description);</td><td class="line-explain"><strong>Calls OpenAI.</strong> Sends the movie's description text to OpenAI and gets back 1536 numbers that represent its meaning. This takes ~0.3 seconds per movie and costs a tiny fraction of a cent.</td></tr>
+        <tr><td class="line-num">6–12</td><td class="line-code">_db.Movies.Add(new Movie { Title=title, ..., Embedding=new Vector(floats) });</td><td class="line-explain"><strong>Creates a Movie object</strong> and adds it to the EF Core change tracker. <code style="color:#c4b5fd;font-family:monospace">new Vector(floats)</code> wraps the float array into the Pgvector type that EF Core knows how to store in the <code style="color:#c4b5fd;font-family:monospace">vector(1536)</code> column.</td></tr>
+        <tr><td class="line-num">13</td><td class="line-code">await _db.SaveChangesAsync();</td><td class="line-explain"><strong>Writes to the database.</strong> EF Core generates and runs the <code style="color:#c4b5fd;font-family:monospace">INSERT INTO movies (...) VALUES (...)</code> SQL. Called inside the loop so each movie is saved before moving to the next.</td></tr>
+        <tr><td class="line-num">14</td><td class="line-code">return Ok(new SeedResponse(count));</td><td class="line-explain"><strong>Returns HTTP 200</strong> with a JSON body like <code style="color:#c4b5fd;font-family:monospace">{"seededCount": 30}</code>. If called again when all movies exist, returns <code style="color:#c4b5fd;font-family:monospace">{"seededCount": 0}</code>.</td></tr>
+      </table>
+    </div>
+
+    <div class="code-block">
+      <div class="code-block-header">
+        <span class="code-file-name">MovieController.cs — POST /api/recommend</span>
+        <span class="pill pill-pink">Recommend Endpoint</span>
       </div>
-      <div class="step">
-        <div class="step-left"><div class="step-num">5</div><div class="step-line"></div></div>
-        <div class="step-body">
-          <h4>Seed the database</h4>
-          <p>Call the seed endpoint once to populate all 30 movies with embeddings:</p>
-          <pre>POST http://localhost:5000/api/seed</pre>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-left"><div class="step-num">6</div><div class="step-line"></div></div>
-        <div class="step-body">
-          <h4>Start the frontend</h4>
-          <pre>cd movie-ui
-npm install
-npm run dev</pre>
-          <p style="margin-top:8px;">UI opens at <code>http://localhost:5173</code></p>
-        </div>
-      </div>
+      <table class="explain-table">
+        <tr><td class="line-num">1</td><td class="line-code">[HttpPost("recommend")]</td><td class="line-explain"><strong>Registers this method as a POST endpoint</strong> at <code style="color:#c4b5fd;font-family:monospace">POST /api/recommend</code>. Called every time the user clicks "Find Movies".</td></tr>
+        <tr><td class="line-num">2</td><td class="line-code">public async Task&lt;ActionResult&lt;IEnumerable&lt;MovieResult&gt;&gt;&gt; Recommend([FromBody] RecommendRequest req)</td><td class="line-explain"><strong>Method signature.</strong> <code style="color:#c4b5fd;font-family:monospace">async Task</code> = asynchronous (can await). <code style="color:#c4b5fd;font-family:monospace">ActionResult&lt;IEnumerable&lt;MovieResult&gt;&gt;</code> = returns either an HTTP error or a list of MovieResult objects. <code style="color:#c4b5fd;font-family:monospace">[FromBody]</code> = reads the JSON request body and binds it to <code style="color:#c4b5fd;font-family:monospace">RecommendRequest</code>.</td></tr>
+        <tr><td class="line-num">3</td><td class="line-code">if (string.IsNullOrWhiteSpace(req.Mood)) return BadRequest(...);</td><td class="line-explain"><strong>Input validation.</strong> If the user sent an empty mood, return HTTP 400 immediately. Prevents wasting an OpenAI API call on empty input.</td></tr>
+        <tr><td class="line-num">4</td><td class="line-code">float[] floats = await GetEmbeddingAsync(req.Mood);</td><td class="line-explain"><strong>Convert the user's mood to a vector.</strong> Calls OpenAI with the mood text (e.g. "funny with a twist"). Returns 1536 numbers representing the meaning of that mood.</td></tr>
+        <tr><td class="line-num">5</td><td class="line-code">string vectorStr = ToVectorString(floats);</td><td class="line-explain"><strong>Format for PostgreSQL.</strong> Converts <code style="color:#c4b5fd;font-family:monospace">float[]</code> to the string <code style="color:#c4b5fd;font-family:monospace">[0.023,-0.14,...]</code> that pgvector understands.</td></tr>
+        <tr><td class="line-num">6</td><td class="line-code">var queryVec = new NpgsqlParameter("queryVec", vectorStr);</td><td class="line-explain"><strong>Creates a SQL parameter.</strong> Using a parameterised query (<code style="color:#c4b5fd;font-family:monospace">@queryVec</code>) instead of injecting the value directly into SQL prevents SQL injection attacks.</td></tr>
+        <tr><td class="line-num">7–14</td><td class="line-code">_db.Database.SqlQueryRaw&lt;MovieQueryResult&gt;("""SELECT title, genre, description, CAST(1 - (embedding &lt;=&gt; @queryVec::vector) AS FLOAT8) AS score FROM movies ORDER BY embedding &lt;=&gt; @queryVec::vector LIMIT 3""", queryVec)</td><td class="line-explain"><strong>The core AI search query.</strong> <code style="color:#c4b5fd;font-family:monospace">embedding &lt;=&gt; @queryVec::vector</code> = cosine DISTANCE between each movie embedding and the mood vector (smaller = more similar). <code style="color:#c4b5fd;font-family:monospace">1 - distance</code> = cosine SIMILARITY (larger = more similar, shown as %). <code style="color:#c4b5fd;font-family:monospace">ORDER BY</code> sorts smallest distance first. <code style="color:#c4b5fd;font-family:monospace">LIMIT 3</code> returns only the top 3 matches.</td></tr>
+        <tr><td class="line-num">15</td><td class="line-code">return Ok(rows.Select(r =&gt; new MovieResult(r.Title, r.Genre, r.Description, r.Score)));</td><td class="line-explain"><strong>Returns the results as JSON.</strong> Maps each raw DB row into a <code style="color:#c4b5fd;font-family:monospace">MovieResult</code> DTO (Data Transfer Object) and sends them as an HTTP 200 response. The frontend receives a JSON array of 3 movies.</td></tr>
+      </table>
     </div>
   </section>
 
-  <!-- How it works -->
-  <section id="how" class="reveal">
-    <div class="section-label">06 — Architecture</div>
-    <h2>How It Works</h2>
-    <div class="card" style="margin-bottom:20px;">
-      <div class="flow">
-        <div class="flow-box"><div class="flow-icon">🧑</div><div class="flow-label">User types mood</div></div>
-        <div class="flow-arrow">→</div>
-        <div class="flow-box"><div class="flow-icon">⚛️</div><div class="flow-label">React sends POST</div></div>
-        <div class="flow-arrow">→</div>
-        <div class="flow-box"><div class="flow-icon">⚙️</div><div class="flow-label">.NET API receives</div></div>
-        <div class="flow-arrow">→</div>
-        <div class="flow-box"><div class="flow-icon">🤖</div><div class="flow-label">OpenAI embeds mood</div></div>
-        <div class="flow-arrow">→</div>
-        <div class="flow-box"><div class="flow-icon">🐘</div><div class="flow-label">pgvector finds matches</div></div>
-        <div class="flow-arrow">→</div>
-        <div class="flow-box"><div class="flow-icon">🎬</div><div class="flow-label">Top 3 returned</div></div>
+  <div class="divider"></div>
+
+  <!-- Frontend -->
+  <section id="frontend" class="reveal">
+    <div class="section-label">07 — Frontend</div>
+    <h2>App.jsx — Line by Line</h2>
+    <p style="color:var(--muted);font-size:.9rem;margin-bottom:20px;line-height:1.7">This is the <strong style="color:#f1f5f9;">entire React frontend</strong>. One component, manages 4 pieces of state, sends one API request, and renders the results.</p>
+
+    <div class="code-block">
+      <div class="code-block-header">
+        <span class="code-file-name">movie-ui/src/App.jsx</span>
+        <span class="pill pill-yellow">React Frontend</span>
       </div>
+      <table class="explain-table">
+        <tr><td class="line-num">1</td><td class="line-code">import { useState } from 'react'</td><td class="line-explain"><strong>Imports React's useState hook.</strong> This lets the component remember values between renders — like what the user typed, or what results came back from the API.</td></tr>
+        <tr><td class="line-num">2</td><td class="line-code">import './App.css'</td><td class="line-explain"><strong>Imports styles.</strong> Vite processes this CSS file and applies it globally to the page.</td></tr>
+        <tr><td class="line-num">4</td><td class="line-code">const [mood, setMood] = useState('')</td><td class="line-explain"><strong>State for the text input.</strong> <code style="color:#c4b5fd;font-family:monospace">mood</code> holds the current typed value. <code style="color:#c4b5fd;font-family:monospace">setMood</code> is the function to update it. Starts as an empty string.</td></tr>
+        <tr><td class="line-num">5</td><td class="line-code">const [results, setResults] = useState([])</td><td class="line-explain"><strong>State for movie results.</strong> Starts empty. After the API call succeeds, this gets filled with the 3 movie objects from the response.</td></tr>
+        <tr><td class="line-num">6</td><td class="line-code">const [loading, setLoading] = useState(false)</td><td class="line-explain"><strong>Loading flag.</strong> Set to <code style="color:#c4b5fd;font-family:monospace">true</code> when the API call starts, back to <code style="color:#c4b5fd;font-family:monospace">false</code> when it finishes. Used to disable the button and show "Finding..." text.</td></tr>
+        <tr><td class="line-num">7</td><td class="line-code">const [error, setError] = useState(null)</td><td class="line-explain"><strong>Error state.</strong> Null normally. If the API call fails, stores the error message string which is displayed to the user in red.</td></tr>
+        <tr><td class="line-num">10</td><td class="line-code">async function handleFind()</td><td class="line-explain"><strong>The main function</strong> called when the user clicks "Find Movies" or presses Enter. <code style="color:#c4b5fd;font-family:monospace">async</code> because it uses <code style="color:#c4b5fd;font-family:monospace">await</code> to wait for the API response.</td></tr>
+        <tr><td class="line-num">11</td><td class="line-code">if (!mood.trim()) return</td><td class="line-explain"><strong>Guard clause.</strong> If the input is empty or just spaces, do nothing. Prevents triggering the API with empty data.</td></tr>
+        <tr><td class="line-num">13–15</td><td class="line-code">setLoading(true); setError(null); setResults([])</td><td class="line-explain"><strong>Resets UI before the request.</strong> Shows loading spinner, clears any previous error, clears old results so stale data doesn't show while waiting for new results.</td></tr>
+        <tr><td class="line-num">18–22</td><td class="line-code">const res = await fetch('http://localhost:5000/api/recommend', { method: 'POST', headers: {...}, body: JSON.stringify({ mood }) })</td><td class="line-explain"><strong>Sends the HTTP request.</strong> <code style="color:#c4b5fd;font-family:monospace">fetch</code> is the browser's built-in HTTP client. <code style="color:#c4b5fd;font-family:monospace">method: 'POST'</code> because we're sending data. <code style="color:#c4b5fd;font-family:monospace">Content-Type: application/json</code> tells the server the body is JSON. <code style="color:#c4b5fd;font-family:monospace">JSON.stringify({ mood })</code> converts the JS object to a JSON string like <code style="color:#c4b5fd;font-family:monospace">{"mood":"funny"}</code>.</td></tr>
+        <tr><td class="line-num">24–27</td><td class="line-code">if (!res.ok) { const text = await res.text(); throw new Error(text || ...) }</td><td class="line-explain"><strong>Error handling for non-200 responses.</strong> <code style="color:#c4b5fd;font-family:monospace">res.ok</code> is true only for 200–299 status codes. If the server returned a 400 or 500, read the error text and throw it so the <code style="color:#c4b5fd;font-family:monospace">catch</code> block handles it.</td></tr>
+        <tr><td class="line-num">29</td><td class="line-code">const data = await res.json()</td><td class="line-explain"><strong>Parses the response JSON.</strong> Converts the API's JSON text into a JavaScript array of movie objects. <code style="color:#c4b5fd;font-family:monospace">data</code> will be like <code style="color:#c4b5fd;font-family:monospace">[{title:"...", genre:"...", description:"...", score:0.36}, ...]</code>.</td></tr>
+        <tr><td class="line-num">30</td><td class="line-code">setResults(data)</td><td class="line-explain"><strong>Updates state with results.</strong> This triggers React to re-render the component, and the new movies appear on screen automatically.</td></tr>
+        <tr><td class="line-num">31–33</td><td class="line-code">catch { setError('Could not reach the server...') }</td><td class="line-explain"><strong>Network error handling.</strong> If the API server isn't running at all, <code style="color:#c4b5fd;font-family:monospace">fetch</code> throws an error. This <code style="color:#c4b5fd;font-family:monospace">catch</code> block shows a friendly message instead of crashing.</td></tr>
+        <tr><td class="line-num">34</td><td class="line-code">finally { setLoading(false) }</td><td class="line-explain"><strong>Always runs</strong> whether the request succeeded or failed. Turns off the loading state so the button becomes clickable again.</td></tr>
+        <tr><td class="line-num">card JSX</td><td class="line-code">{results.map((movie, i) =&gt; ( &lt;div className="card"&gt;... ))}</td><td class="line-explain"><strong>Renders the result cards.</strong> <code style="color:#c4b5fd;font-family:monospace">.map()</code> loops through the 3 movies. For each one, creates a card with the title, genre badge, description, rank number, and a match score progress bar.</td></tr>
+        <tr><td class="line-num">score bar</td><td class="line-code">style={{ width: `${Math.round(movie.score * 100)}%` }}</td><td class="line-explain"><strong>Visual score bar.</strong> <code style="color:#c4b5fd;font-family:monospace">movie.score</code> is a decimal like <code style="color:#c4b5fd;font-family:monospace">0.36</code>. Multiply by 100 → <code style="color:#c4b5fd;font-family:monospace">36</code>. Set as the CSS <code style="color:#c4b5fd;font-family:monospace">width</code> so the bar fills 36% of its container. Simple but effective visual representation.</td></tr>
+      </table>
     </div>
-    <div class="card">
-      <p style="color:var(--muted);font-size:0.88rem;line-height:1.8;">
-        The core of the recommendation is this SQL query using pgvector's cosine distance operator <code style="color:#c4b5fd;background:rgba(124,58,237,0.15);padding:2px 7px;border-radius:4px;font-family:monospace;">&lt;=&gt;</code>:
-      </p>
-      <pre style="margin-top:14px;"><span class="key">SELECT</span> title<span class="punct">,</span> genre<span class="punct">,</span> description<span class="punct">,</span>
-  <span class="key">CAST</span><span class="punct">(</span><span class="num">1</span> <span class="punct">-</span> <span class="punct">(</span>embedding <span class="punct">&lt;=&gt;</span> @queryVec<span class="punct">::</span>vector<span class="punct">)</span> <span class="key">AS</span> FLOAT8<span class="punct">)</span> <span class="key">AS</span> score
-<span class="key">FROM</span> movies
-<span class="key">ORDER BY</span> embedding <span class="punct">&lt;=&gt;</span> @queryVec<span class="punct">::</span>vector
-<span class="key">LIMIT</span> <span class="num">3</span></pre>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- Full end to end flow -->
+  <section id="flow" class="reveal">
+    <div class="section-label">08 — End to End</div>
+    <h2>Complete Request Walkthrough</h2>
+    <p style="color:var(--muted);font-size:.9rem;margin-bottom:24px;line-height:1.7">Follow a single request — user types <em>"funny with a twist ending"</em> — through every file:</p>
+
+    <div class="card" style="padding:0;overflow:hidden">
+      <table style="width:100%;border-collapse:collapse">
+        <thead>
+          <tr style="background:rgba(124,58,237,.15);border-bottom:1px solid var(--border)">
+            <th style="padding:14px 18px;text-align:left;font-size:.8rem;color:#c4b5fd;font-weight:700;letter-spacing:.05em">STEP</th>
+            <th style="padding:14px 18px;text-align:left;font-size:.8rem;color:#c4b5fd;font-weight:700;letter-spacing:.05em">WHERE</th>
+            <th style="padding:14px 18px;text-align:left;font-size:.8rem;color:#c4b5fd;font-weight:700;letter-spacing:.05em">WHAT HAPPENS</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom:1px solid rgba(255,255,255,.05)"><td style="padding:14px 18px;font-size:.84rem;font-weight:700;color:#fde68a;white-space:nowrap">1</td><td style="padding:14px 18px;font-size:.8rem;font-family:monospace;color:#c4b5fd;">App.jsx</td><td style="padding:14px 18px;font-size:.84rem;color:var(--muted);">User types "funny with a twist ending" → clicks button → <code style="color:#c4b5fd;font-family:monospace">handleFind()</code> runs.</td></tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,.05)"><td style="padding:14px 18px;font-size:.84rem;font-weight:700;color:#fde68a;white-space:nowrap">2</td><td style="padding:14px 18px;font-size:.8rem;font-family:monospace;color:#c4b5fd;">App.jsx</td><td style="padding:14px 18px;font-size:.84rem;color:var(--muted);">Browser sends <code style="color:#c4b5fd;font-family:monospace">POST http://localhost:5000/api/recommend</code> with body <code style="color:#c4b5fd;font-family:monospace">{"mood":"funny with a twist ending"}</code>.</td></tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,.05)"><td style="padding:14px 18px;font-size:.84rem;font-weight:700;color:#fde68a;white-space:nowrap">3</td><td style="padding:14px 18px;font-size:.8rem;font-family:monospace;color:#c4b5fd;">Program.cs</td><td style="padding:14px 18px;font-size:.84rem;color:var(--muted);">CORS middleware checks: is this request from <code style="color:#c4b5fd;font-family:monospace">localhost:5173</code>? Yes → allow it.</td></tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,.05)"><td style="padding:14px 18px;font-size:.84rem;font-weight:700;color:#fde68a;white-space:nowrap">4</td><td style="padding:14px 18px;font-size:.8rem;font-family:monospace;color:#c4b5fd;">MovieController.cs</td><td style="padding:14px 18px;font-size:.84rem;color:var(--muted);"><code style="color:#c4b5fd;font-family:monospace">Recommend()</code> method receives the request. JSON body is auto-bound to <code style="color:#c4b5fd;font-family:monospace">RecommendRequest { Mood = "funny with a twist ending" }</code>.</td></tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,.05)"><td style="padding:14px 18px;font-size:.84rem;font-weight:700;color:#fde68a;white-space:nowrap">5</td><td style="padding:14px 18px;font-size:.8rem;font-family:monospace;color:#c4b5fd;">OpenAI API</td><td style="padding:14px 18px;font-size:.84rem;color:var(--muted);"><code style="color:#c4b5fd;font-family:monospace">GetEmbeddingAsync("funny with a twist ending")</code> sends text to OpenAI servers. Returns array of 1536 floats like <code style="color:#c4b5fd;font-family:monospace">[0.023, -0.14, 0.067, ...]</code>.</td></tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,.05)"><td style="padding:14px 18px;font-size:.84rem;font-weight:700;color:#fde68a;white-space:nowrap">6</td><td style="padding:14px 18px;font-size:.8rem;font-family:monospace;color:#c4b5fd;">MovieController.cs</td><td style="padding:14px 18px;font-size:.84rem;color:var(--muted);"><code style="color:#c4b5fd;font-family:monospace">ToVectorString(floats)</code> converts the array to <code style="color:#c4b5fd;font-family:monospace">[0.023,-0.14,0.067,...]</code> string for PostgreSQL.</td></tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,.05)"><td style="padding:14px 18px;font-size:.84rem;font-weight:700;color:#fde68a;white-space:nowrap">7</td><td style="padding:14px 18px;font-size:.8rem;font-family:monospace;color:#c4b5fd;">PostgreSQL + pgvector</td><td style="padding:14px 18px;font-size:.84rem;color:var(--muted);"><code style="color:#c4b5fd;font-family:monospace">SqlQueryRaw</code> runs the SELECT query. pgvector calculates cosine distance between the mood vector and every row's <code style="color:#c4b5fd;font-family:monospace">embedding</code> column (1536 numbers × 30 movies = 46,080 multiplications). Returns top 3.</td></tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,.05)"><td style="padding:14px 18px;font-size:.84rem;font-weight:700;color:#fde68a;white-space:nowrap">8</td><td style="padding:14px 18px;font-size:.8rem;font-family:monospace;color:#c4b5fd;">AppDbContext.cs</td><td style="padding:14px 18px;font-size:.84rem;color:var(--muted);">EF Core maps the raw SQL results into <code style="color:#c4b5fd;font-family:monospace">List&lt;MovieQueryResult&gt;</code> C# objects by matching column names to property names.</td></tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,.05)"><td style="padding:14px 18px;font-size:.84rem;font-weight:700;color:#fde68a;white-space:nowrap">9</td><td style="padding:14px 18px;font-size:.8rem;font-family:monospace;color:#c4b5fd;">MovieController.cs</td><td style="padding:14px 18px;font-size:.84rem;color:var(--muted);"><code style="color:#c4b5fd;font-family:monospace">Ok(rows.Select(r =&gt; new MovieResult(...)))</code> wraps results in DTO objects and sends them as HTTP 200 JSON response.</td></tr>
+          <tr><td style="padding:14px 18px;font-size:.84rem;font-weight:700;color:#fde68a;white-space:nowrap">10</td><td style="padding:14px 18px;font-size:.8rem;font-family:monospace;color:#c4b5fd;">App.jsx</td><td style="padding:14px 18px;font-size:.84rem;color:var(--muted);"><code style="color:#c4b5fd;font-family:monospace">setResults(data)</code> updates React state. Component re-renders. 3 movie cards appear on screen with title, genre, description, and match % bar.</td></tr>
+        </tbody>
+      </table>
     </div>
   </section>
 
 </div>
 
-<!-- Footer -->
 <footer>
   <p>Built with ❤️ by <span>Adhil Mohammad</span> &nbsp;·&nbsp; AI Movie Recommendation Engine &nbsp;·&nbsp; 2026</p>
 </footer>
 
 <script>
-  // Floating particles
+  // Particles
   const container = document.getElementById('particles');
-  for (let i = 0; i < 28; i++) {
+  for (let i = 0; i < 25; i++) {
     const p = document.createElement('div');
     p.className = 'particle';
     p.style.left = Math.random() * 100 + '%';
     p.style.width = p.style.height = (Math.random() * 3 + 1.5) + 'px';
-    p.style.animationDuration  = (Math.random() * 18 + 12) + 's';
-    p.style.animationDelay     = (Math.random() * 14) + 's';
+    p.style.animationDuration = (Math.random() * 18 + 12) + 's';
+    p.style.animationDelay    = (Math.random() * 14) + 's';
     p.style.background = `hsl(${Math.random() > 0.5 ? 270 : 310}, 80%, 70%)`;
-    p.style.opacity = Math.random() * 0.6 + 0.2;
     container.appendChild(p);
   }
-
   // Scroll reveal
-  const observer = new IntersectionObserver(entries => {
+  const obs = new IntersectionObserver(entries => {
     entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-  }, { threshold: 0.12 });
-  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
 </script>
 </body>
 </html>
