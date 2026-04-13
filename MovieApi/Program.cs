@@ -51,4 +51,8 @@ using (var scope = app.Services.CreateScope())
 
 app.UseCors();
 app.MapControllers();
+
+// ── Health check endpoint ─────────────────────────────────────────────────────
+app.MapGet("/health", () => Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow }));
+
 app.Run();
